@@ -16,6 +16,9 @@ class CityDict(models.Model):
         verbose_name = u"城市"
         verbose_name_plural = verbose_name
 
+    def __unicode__(self):
+        return '{0}'.format(self.name)
+
 
 class CourseOrg(models.Model):
     name = models.CharField(max_length=50, verbose_name=u"机构名称")
