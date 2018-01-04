@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'captcha',
+    'pure_pagination',
 ]
 
 AUTH_USER_MODEL = "users.UserProfile"
@@ -72,8 +73,7 @@ ROOT_URLCONF = 'MxOnline.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.media',  # 添加了该配置后，Django自动将MEDIA_URL注册到html中
             ],
         },
     },
@@ -157,3 +158,6 @@ EMAIL_HOST_USER = "lilyef2000@163.com"
 EMAIL_HOST_PASSWORD = "781208LL"
 EMAIL_USE_TLS = False
 EMAIL_FROM = "lilyef2000@163.com"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
