@@ -37,6 +37,10 @@ class CourseOrg(models.Model):
         verbose_name = u"课程机构"
         verbose_name_plural = verbose_name
 
+    def get_teacher_nums(self):
+        # 获取课程机构的教师数
+        return self.teacher_set.all().count()
+
     def __unicode__(self):
         return '{0}'.format(self.name)
 
@@ -50,6 +54,7 @@ class Teacher(models.Model):
     points = models.CharField(max_length=50, verbose_name=u"教学特点")
     click_num = models.IntegerField(default=0, verbose_name=u"点击数")
     fav_num = models.IntegerField(default=0, verbose_name=u"收藏数")
+    age = models.IntegerField(default=18, verbose_name=u"年龄")
     image = models.ImageField(default='', upload_to="teacher/%Y/%m", verbose_name=u"头像", max_length=100)
     add_time = models.DateTimeField(default=datetime.now)
 
