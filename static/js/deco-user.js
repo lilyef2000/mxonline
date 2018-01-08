@@ -86,7 +86,7 @@ $(function(){
             cache: false,
             type: "POST",
             dataType:'json',
-            url:"/users/update/pwd/",
+            url:"/users/update/pwd/",  // 注意这里不能按模板的写法{% url 'users:update_pwd' %}
             data:$('#jsResetPwdForm').serialize(),
             async: true,
             success: function(data) {

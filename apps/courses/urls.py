@@ -2,10 +2,6 @@
 __author__ = 'antenna'
 __date__ = '18-1-5 上午8:53'
 
-# _*_ coding:utf-8 _*_
-__author__ = 'antenna'
-__date__ = '18-1-4 下午12:39'
-
 from django.conf.urls import url, include
 from .views import CourseListView, CourseDetailView, CourseInfoView, CommentsView, AddCommentsView, VideoPlayView
 

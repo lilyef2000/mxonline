@@ -24,10 +24,14 @@ class UserProfile(AbstractUser):
     def __unicode__(self):  # 不重载的话，print实例时，不打印自定义的字符串
         return self.username
 
+    def unread_nums(self):
+        from operation.models import UserMessage
+        return UserMessage.objects.filter(user=self.id).count()
+
 class EmailVerifyRecord(models.Model):
     code = models.CharField(max_length=20, verbose_name=u" 验证码")
     email = models.EmailField(max_length=50, verbose_name=u"邮箱")
-    send_type = models.CharField(choices=(("register",u"注册"),("forget",u"找回密码")),max_length=10, verbose_name=u"验证码类型")
+    send_type = models.CharField(choices=(("register",u"注册"),("forget",u"找回密码"),("update_email",u"修改邮箱")),max_length=30, verbose_name=u"验证码类型")
     send_time = models.DateTimeField(default=datetime.now, verbose_name=u"发送时间")
     # 注意一定要把datetime.now后边的括号去掉，否则带括号会获取model编译的时间，不带括号才会获取model实例化的时间。
 
@@ -49,6 +53,8 @@ class Banner(models.Model):
     class Meta:
         verbose_name = u"轮播图"
         verbose_name_plural = verbose_name
+
+
 
 
 
