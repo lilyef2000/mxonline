@@ -2,13 +2,15 @@
 import json
 
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.views.generic.base import View
 from django.contrib.auth.hashers import make_password
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
+from django.shortcuts import render_to_response
 
 from .models import UserProfile, EmailVerifyRecord
 from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, UploadImageForm, UserInfoForm
@@ -17,6 +19,7 @@ from utils.mixin_utils import LoginRequireMixin
 from operation.models import UserCourse, UserFavorite, UserMessage
 from organization.models import CourseOrg, Teacher
 from courses.models import Course
+from .models import Banner
 
 class CustomBackend(ModelBackend):
     def authenticate(self, username=None, password=None, **kwargs):
@@ -65,11 +68,20 @@ class RegisterView(View):
             user_message.message = "欢迎注册MOOC在线网"
             user_message.save()
 
-
             send_register_email(user_name, "register")
             return render(request, "login.html")
         else:
             return render(request, "register.html", {"register_form":register_form})
+
+
+class LogoutView(View):
+    """
+    用户登出
+    """
+    def get(self, request):
+        logout(request)
+        return HttpResponseRedirect(reverse("index"))
+        # 参数既可以使用完整的url，也可以是绝对路径。所以需要通过reverse()将命名空间转换成绝对路径
 
 
 class LoginView(View):
@@ -85,7 +97,7 @@ class LoginView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return render(request, "index.html")
+                    return HttpResponseRedirect(reverse("index"))
                 else:
                     return render(request, "login.html", {"msg": "用户未激活!"})
             else:
@@ -318,6 +330,13 @@ class MymessageView(LoginRequireMixin, View):
     """
     def get(self, request):
         all_messages = UserMessage.objects.filter(user=request.user.id)
+
+        # 用户进入个人消息后清空未读消息的记录
+        all_unread_message = UserMessage.objects.filter(user=request.user.id, has_read=False)
+        for unread_message in all_unread_message:
+            unread_message.has_read = True
+            unread_message.save()
+
         # 对个人消息进行分页
         try:
             page = request.GET.get('page', 1)
@@ -329,3 +348,53 @@ class MymessageView(LoginRequireMixin, View):
         return render(request, 'usercenter-message.html', {
             "messages":messages
         })
+
+
+class IndexView(View):
+    # 网站首页
+    def get(self, request):
+        # 取出轮播图
+        # print 1/0  # 500错误测试语句
+        all_banners = Banner.objects.all().order_by('index')
+        courses = Course.objects.filter(is_banner=False)[:6]
+        banner_courses = Course.objects.filter(is_banner=True)[:3]
+        course_orgs = CourseOrg.objects.all()[:15]
+        return render(request, 'index.html', {
+            'all_banners':all_banners,
+            'courses':courses,
+            'banner_courses':banner_courses,
+            'course_orgs':course_orgs,
+        })
+
+
+# class LoginUnsafeView(View):
+#     def get(self, request):
+#         return render(request, "login.html", {})
+#     def post(self, request):
+#         user_name = request.POST.get("username", "")
+#         pass_word = request.POST.get("password", "")
+#
+#         import MySQLdb
+#         conn = MySQLdb.connect(host='127.0.0.1', user='root', passwd='root', db='mxonline', charset='utf8')
+#         cursor = conn.cursor()
+#         sql_select = "select * from users_userprofile where email='{0}' and password='{1}'".format(user_name, pass_word)
+#
+#         result = cursor.execute(sql_select)
+#         for row in cursor.fetchall():
+#             # 查询到用户
+#             pass
+#         print 'hello'
+
+def pag_not_found(request):
+    # 全局404处理函数
+
+    response = render_to_response('404.html', {})
+    response.status_code = 404
+    return response
+
+
+def page_error(request):
+    # 全局500处理函数
+    response = render_to_response('500.html', {})
+    response.status_code = 500
+    return response

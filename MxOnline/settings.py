@@ -30,7 +30,7 @@ SECRET_KEY = '+x8)wkd7=znxwf1(3puj+5knr6!o(0od^tdv3a@41wnx719_8w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'captcha',
     'pure_pagination',
+    'DjangoUeditor',
 ]
 
 AUTH_USER_MODEL = "users.UserProfile"
@@ -161,3 +162,6 @@ EMAIL_FROM = "lilyef2000@163.com"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# DEBUG = False时STATICFILES_DIRS失效，静态路径由http服务器负责解析，解决方法为增加上边的STATIC_ROOT

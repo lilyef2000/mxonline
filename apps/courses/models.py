@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 from datetime import datetime
 
+from DjangoUeditor.models import UEditorField
+
 from django.db import models
 from organization.models import CourseOrg, Teacher
 
@@ -11,7 +13,13 @@ class Course(models.Model):
     course_org = models.ForeignKey(CourseOrg, verbose_name=u"课程机构", null=True, blank=True)
     name = models.CharField(max_length=50, verbose_name=u"课程名")
     desc = models.CharField(max_length=300, verbose_name=u"课程描述")
-    detail = models.TextField(verbose_name=u"课程详情")
+    detail = UEditorField(verbose_name=u'课程详情', width=600, height=300, imagePath="courses/ueditor/",
+                                           filePath="courses/ueditor/", default='')
+    # Content = UEditorField(u'内容	', width=600, height=300, toolbars="full", imagePath="", filePath="",
+    #                        upload_settings={"imageMaxSize": 1204000},
+    #                        settings={}, command=None, event_handler=myEventHander(), blank=True)
+
+    is_banner = models.BooleanField(default=False, verbose_name=u"是否轮播")
     teacher = models.ForeignKey(Teacher, verbose_name=u"讲师", null=True, blank=True)
     degree = models.CharField(verbose_name=u"难度", choices=(("cj",u"初级"),("zj",u"中级"),("gj",u"高级")), max_length=2)
     learn_times = models.IntegerField(default=0, verbose_name=u"学习时长(分钟数)")
@@ -32,6 +40,12 @@ class Course(models.Model):
     def get_zj_nums(self):
         # 获取课程章节数
         return self.lesson_set.all().count()
+    get_zj_nums.short_description = "章节数"
+
+    def go_to(self):
+        from django.utils.safestring import mark_safe
+        return mark_safe("<a href='http://www.projectsedu.com'>跳转</a>")
+    go_to.short_description = "跳转"
 
     def get_learn_users(self):
         return self.usercourse_set.all()[:5]
@@ -42,6 +56,14 @@ class Course(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+# 同一个Model注册为两个管理器
+class BannerCourse(Course):
+    class Meta:
+        verbose_name = "轮播课程"
+        verbose_name_plural = verbose_name
+        proxy = True
 
 
 class Lesson(models.Model):

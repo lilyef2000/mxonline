@@ -119,7 +119,7 @@ class PermissionAdmin(object):
     list_display = ('show_name', )
 
 site.register(Group, GroupAdmin)
-site.register(User, UserAdmin)
+site.register(User, UserAdmin)  # 这里User其实用的是User = get_user_model(),是UserProfile
 site.register(Permission, PermissionAdmin)
 
 
