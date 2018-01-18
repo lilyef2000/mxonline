@@ -155,10 +155,10 @@ STATICFILES_DIRS = (
 
 EMAIL_HOST = "smtp.163.com"
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "lilyef2000@163.com"
-EMAIL_HOST_PASSWORD = "781208LL"
+EMAIL_HOST_USER = "xxxxxxxx@163.com"
+EMAIL_HOST_PASSWORD = "yourpass"
 EMAIL_USE_TLS = False
-EMAIL_FROM = "lilyef2000@163.com"
+EMAIL_FROM = "xxxxxxxx@163.com"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
